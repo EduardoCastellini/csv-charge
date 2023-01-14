@@ -1,0 +1,15 @@
+version: '3.7'
+services:
+  api-csv-charge:
+    container_name: api-csv-charge
+    restart: on-failure
+    build:
+      context: .
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - ${PORT}:${PORT}
+    env_file:
+      - .env
+    command: yarn start:dev
