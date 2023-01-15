@@ -14,7 +14,27 @@ API desenvolvida para realizar cobranças por E-mail.
 ```http
   POST /charge
 ```
+| Form-data   | Tipo       | Descrição                                           |
+| :---------- | :--------- | :-------------------------------------------------- |
+| `file`      | `file`     | **Obrigatório**. Arquivo CSV contendo as cobranças  |
 
+
+#### Enviar notificação via Webhook: 
+```http
+  POST /webhook
+```
+| Campos do JSON  | Tipo     | Descrição                        |
+| :----------     | :------- | :------------------------------- |
+| `debtId`        | `string` | Identificação do débito          |
+| `paidAt`        | `string` | Data de pagamento                |
+| `paidAmount`    | `number` | Valor pago                       |
+| `paidBy`        | `string` | Nome do pagador                  |
+
+
+#### Listar todas as cobranças:
+```http
+  GET /charge
+```
 
 
 ## Executando a aplicação local com o docker-compose 
