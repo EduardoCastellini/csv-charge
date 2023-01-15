@@ -1,26 +1,30 @@
 import Bull from 'bull';
 import { join } from 'path';
 import { IMessageBrokerSendMessage, SendMessageProps } from '@/app/contracts';
+import { config } from '@/main/config/env';
 
 export class MessageBroker implements IMessageBrokerSendMessage {
-  private queue: Bull.Queue;
+  private queue: Bull.Queue | undefined;
 
   constructor() {
-    console.log('constructor MessageBroker');
-    this.queue = new Bull('charge_queue', {
-      redis: {
-        host: 'localhost',
-        port: 6379
-      }
-    });
+    try {
+      this.queue = new Bull('charge_queue', {
+        redis: {
+          host: config.redis.host,
+          port: config.redis.port
+        }
+      });
 
-    const pathProcessor = join(__dirname, 'job.processor.ts');
+      const pathProcessor = join(__dirname, 'charge.processor.ts');
 
-    this.queue.process(pathProcessor);
+      this.queue.process(pathProcessor);
+    } catch (error) {
+      console.log('Error init Bull Queue: ', error);
+    }
   }
 
   send(props: SendMessageProps): void {
-    console.log('sending message to queue');
-    this.queue.add(props);
+    if (this.queue) this.queue.add(props);
+    console.log('Sending message to queue');
   }
 }

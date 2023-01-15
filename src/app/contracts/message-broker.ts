@@ -7,7 +7,8 @@ export type Message = {
   governmentId: number;
   email: string;
   debtAmount: number;
-  debtDueDate: string;
+  debtDueDate: Date;
+  debtId: number;
 };
 
 export interface IMessageBrokerSendMessage {

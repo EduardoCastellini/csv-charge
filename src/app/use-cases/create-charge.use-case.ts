@@ -1,3 +1,6 @@
+import { ChargeEntity } from '@/domain/entities';
+import { InvalidPropertyError, UnexpectedError } from '@/domain/errors';
+import { IMessageBrokerSendMessage } from '../contracts';
 import {
   Either,
   IChargeRepository,
@@ -6,9 +9,6 @@ import {
   Result,
   right
 } from '@/domain/contracts';
-import { ChargeEntity } from '@/domain/entities';
-import { InvalidPropertyError, UnexpectedError } from '@/domain/errors';
-import { IMessageBrokerSendMessage } from '../contracts';
 
 type CreateChargeOutput = Either<
   InvalidPropertyError | UnexpectedError,
@@ -65,10 +65,11 @@ export class CreateChargeUseCase implements ICreateChargeUseCase {
           this.messageBrokerSendMessage.send({
             data: {
               name: charge.props.name.value,
-              governmentId: 0,
+              governmentId: charge.props.governmentId.value,
               email: charge.props.email.value,
-              debtAmount: 0,
-              debtDueDate: ' '
+              debtAmount: charge.props.debtAmount,
+              debtDueDate: charge.props.debtDueDate.value,
+              debtId: charge.props.debtId
             }
           });
         })
@@ -76,7 +77,6 @@ export class CreateChargeUseCase implements ICreateChargeUseCase {
 
       return right(Result.ok());
     } catch (error) {
-      console.log('error: ', error);
       return left(UnexpectedError.create(error));
     }
   }

@@ -1,10 +1,14 @@
 import { Either, Entity, left, Result, right } from '../contracts';
 import { InvalidPropertyError, InvalidOperationError } from '../errors';
-import { Email, Name, UUID } from '../value-objects';
+import { DateVO, Email, Government, Name, UUID } from '../value-objects';
 
 export type ChargeProps = {
   name: Name;
   email: Email;
+  governmentId: Government;
+  debtAmount: number;
+  debtDueDate: DateVO;
+  debtId: number;
 };
 
 export type ChargePrimitivesProps = {
@@ -32,9 +36,21 @@ export class ChargeEntity extends Entity<ChargeProps> {
       return left(nameOrError.value);
     }
 
+    const governmentIdOrError = Government.create({
+      value: props.governmentId
+    });
+    if (governmentIdOrError.isLeft()) {
+      return left(governmentIdOrError.value);
+    }
+
     const emailOrError = Email.create({ value: props.email });
     if (emailOrError.isLeft()) {
       return left(emailOrError.value);
+    }
+
+    const debtDueDateOrError = DateVO.create(props.debtDueDate);
+    if (debtDueDateOrError.isLeft()) {
+      return left(debtDueDateOrError.value);
     }
 
     return right(
@@ -43,7 +59,11 @@ export class ChargeEntity extends Entity<ChargeProps> {
           id: idOrErro.getValue(),
           props: {
             name: nameOrError.value.getValue(),
-            email: emailOrError.value.getValue()
+            email: emailOrError.value.getValue(),
+            governmentId: governmentIdOrError.value.getValue(),
+            debtAmount: props.debtAmount,
+            debtDueDate: debtDueDateOrError.value.getValue(),
+            debtId: props.debtId
           }
         })
       )
