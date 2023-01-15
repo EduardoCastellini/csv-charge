@@ -8,16 +8,25 @@ export type ChargeProps = {
   governmentId: Government;
   debtAmount: number;
   debtDueDate: DateVO;
-  debtId: number;
+  debtId: string;
+  paidAt?: DateVO;
+  paidAmount?: number;
+  paidBy?: Name;
 };
 
 export type ChargePrimitivesProps = {
   name: string;
-  governmentId: number;
+  governmentId: string;
   email: string;
   debtAmount: number;
   debtDueDate: string;
-  debtId: number;
+  debtId: string;
+};
+
+export type PayProps = {
+  paidAt: DateVO;
+  paidAmount: number;
+  paidBy: Name;
 };
 
 export class ChargeEntity extends Entity<ChargeProps> {
@@ -68,5 +77,15 @@ export class ChargeEntity extends Entity<ChargeProps> {
         })
       )
     );
+  }
+
+  public pay(
+    pay: PayProps
+  ): Either<InvalidPropertyError, Result<ChargeEntity>> {
+    this.props.paidAmount = pay.paidAmount;
+    this.props.paidAt = pay.paidAt;
+    this.props.paidBy = pay.paidBy;
+
+    return right(Result.ok<ChargeEntity>(this));
   }
 }

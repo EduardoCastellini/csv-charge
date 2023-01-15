@@ -3,19 +3,20 @@ import { ValueObject } from '../contracts/value-object';
 import { InvalidPropertyError } from '../errors/invalid-property.erro';
 
 type GovernmentProps = {
-  value: number;
+  value: string;
 };
 
 export class Government extends ValueObject<GovernmentProps> {
-  get value(): number {
+  get value(): string {
     return this.props.value;
   }
 
-  private constructor(props: GovernmentProps) {
+  constructor(props: GovernmentProps) {
     super(props);
   }
 
-  private static isGovernmentValid(value: number): boolean {
+  private static isGovernmentValid(value: string): boolean {
+    if (!value) return false;
     // necessary validations
     return true;
   }

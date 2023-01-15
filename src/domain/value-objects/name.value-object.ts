@@ -11,11 +11,12 @@ export class Name extends ValueObject<NameProps> {
     return this.props.value;
   }
 
-  private constructor(props: NameProps) {
+  constructor(props: NameProps) {
     super(props);
   }
 
   private static isNameValid(value: string): boolean {
+    if (!value) return false;
     if (value.length <= 2 || value.length > 100) return false;
 
     return true;

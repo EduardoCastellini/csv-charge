@@ -21,8 +21,8 @@ export interface CreateEntityProps<EntityProps> {
 
 export abstract class Entity<EntityProps> {
   protected abstract _id: UUID;
-  protected readonly _createdAt: DateVO;
-  protected readonly _updatedAt: DateVO;
+  protected readonly _createdAt?: DateVO;
+  protected readonly _updatedAt?: DateVO;
   public readonly props: EntityProps;
 
   constructor({
@@ -39,14 +39,6 @@ export abstract class Entity<EntityProps> {
 
   private setId(id: UUID): void {
     this._id = id;
-  }
-
-  get createdAt(): DateVO {
-    return this._createdAt;
-  }
-
-  get updatedAt(): DateVO | undefined {
-    return this._updatedAt;
   }
 
   get id(): UUID {

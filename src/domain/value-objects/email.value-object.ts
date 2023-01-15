@@ -11,11 +11,13 @@ export class Email extends ValueObject<EmailProps> {
     return this.props.value;
   }
 
-  private constructor(props: EmailProps) {
+  constructor(props: EmailProps) {
     super(props);
   }
 
   private static isEmailValid(value: string): boolean {
+    if (!value) return false;
+
     const string = String(value)
       .toLowerCase()
       .match(

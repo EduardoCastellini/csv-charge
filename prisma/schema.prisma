@@ -13,11 +13,11 @@ datasource db {
 model Charge {
   id           String    @id
   name         String
-  governmentId Int
+  governmentId String
   email        String
   debtAmount   Decimal
   debtDueDate  DateTime
-  debtId       Int
+  debtId       String
   paidAt       DateTime?
   paidAmount   Decimal?
   paidBy       String?

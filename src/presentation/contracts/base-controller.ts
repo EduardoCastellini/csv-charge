@@ -44,7 +44,7 @@ export abstract class BaseController {
     return BaseController.jsonResponse(
       res,
       400,
-      message ? message : 'Unauthorized'
+      message ? message : 'Bad Request!'
     );
   }
 
@@ -52,14 +52,14 @@ export abstract class BaseController {
     return BaseController.jsonResponse(
       res,
       404,
-      message ? message : 'Not found'
+      message ? message : 'Not found!'
     );
   }
 
   public fail(res: express.Response, error: Error | string) {
     console.log(error);
     return res.status(500).json({
-      message: error.toString()
+      message: 'Internal server error!'
     });
   }
 }

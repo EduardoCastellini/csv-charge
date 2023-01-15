@@ -8,7 +8,6 @@ RUN chmod -R 777 ./
 
 RUN yarn
 RUN yarn generate
-RUN yarn migrate
 
 EXPOSE ${PORT}
 

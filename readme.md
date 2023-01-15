@@ -21,7 +21,7 @@ API desenvolvida para realizar cobranças por E-mail.
 
 1. Baixe o repositório do projeto em seu computador.
 2. Acesse o diretório raiz do projeto.
-4. Crie uma copia do arquivo ".env.example" e renomeei o mesmo para somente: ".env".
+4. Crie uma copia do arquivo ".env.example" e renomeei o mesmo para: ".env".
 4. Execute o seguinte comando:
 ```bash
 # realiza o build e já sobe o container

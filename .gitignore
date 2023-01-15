@@ -129,8 +129,5 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# Database
-dev.db
-
 # Files received
 uploads/

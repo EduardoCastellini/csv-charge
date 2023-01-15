@@ -4,11 +4,11 @@ export type SendMessageProps = {
 
 export type Message = {
   name: string;
-  governmentId: number;
+  governmentId: string;
   email: string;
   debtAmount: number;
   debtDueDate: Date;
-  debtId: number;
+  debtId: string;
 };
 
 export interface IMessageBrokerSendMessage {

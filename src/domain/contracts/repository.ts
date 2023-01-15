@@ -1,5 +1,4 @@
 import { ChargeEntity } from '../entities';
-import { ID } from '../value-objects/id.value-object';
 
 export interface ISave<Entity> {
   save(entity: Entity): Promise<Entity>;
@@ -9,8 +8,8 @@ export interface IUpdate<Entity> {
   update(entity: Entity): Promise<Entity>;
 }
 
-export interface IFindOneById<Entity> {
-  findOneById(id: ID): Promise<Entity>;
+export interface IFindOneByDebtId<Entity> {
+  findOneByDebtId(id: string): Promise<Entity | void>;
 }
 
 export interface IDeleteOne<Entity> {
@@ -19,4 +18,5 @@ export interface IDeleteOne<Entity> {
 
 export interface IChargeRepository
   extends ISave<ChargeEntity[]>,
+    IFindOneByDebtId<ChargeEntity>,
     IUpdate<ChargeEntity> {}

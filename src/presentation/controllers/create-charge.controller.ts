@@ -1,10 +1,9 @@
 import * as express from 'express';
 import csv from 'csv-parser';
 import * as fs from 'fs';
-
 import { BaseController } from '../contracts';
 import { CreateChargeInput, ICreateChargeUseCase } from '@/app/use-cases';
-import { InvalidPropertyError, UnexpectedError } from '@/domain/errors';
+import { InvalidPropertyError } from '@/domain/errors';
 
 export class CreateChargeController extends BaseController {
   constructor(private readonly createChargeUseCase: ICreateChargeUseCase) {
@@ -34,8 +33,6 @@ export class CreateChargeController extends BaseController {
             switch (error.constructor) {
               case InvalidPropertyError:
                 return this.clientError(res, error.getValue().message);
-              case UnexpectedError:
-                return this.fail(res, error.getValue().message);
               default:
                 return this.fail(res, error.getValue().message);
             }
@@ -44,7 +41,7 @@ export class CreateChargeController extends BaseController {
           return this.created(res);
         });
     } catch (err: any) {
-      return this.fail(res, err);
+      return this.fail(res, err.toString());
     }
   }
 }
