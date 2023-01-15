@@ -7,7 +7,7 @@ type webhookResponse = {
   message: string;
 };
 export class WebhookController extends BaseController {
-  constructor(private readonly createChargeUseCase: IPayDebtUseCase) {
+  constructor(private readonly payDebtUseCase: IPayDebtUseCase) {
     super();
   }
 
@@ -16,7 +16,7 @@ export class WebhookController extends BaseController {
     res: express.Response
   ): Promise<void | any> {
     try {
-      const resultOrError = await this.createChargeUseCase.execute(req.body);
+      const resultOrError = await this.payDebtUseCase.execute(req.body);
 
       if (resultOrError.isLeft()) {
         const error = resultOrError.value;

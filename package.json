@@ -12,6 +12,8 @@
     "build": "npm run clean && tsc -p tsconfig-build.json",
     "lint": "eslint . --ext .ts",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "test": "jest --passWithNoTests --no-cache --runInBand",
+    "test:coverage": "npm t -- --coverage",
     "generate": "yarn prisma generate",
     "migrate": "yarn prisma migrate deploy"
   },

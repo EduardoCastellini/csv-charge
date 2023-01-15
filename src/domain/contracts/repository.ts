@@ -12,6 +12,10 @@ export interface IFindOneByDebtId<Entity> {
   findOneByDebtId(id: string): Promise<Entity | void>;
 }
 
+export interface IFindAll<Entity> {
+  findAll(): Promise<Entity[] | void>;
+}
+
 export interface IDeleteOne<Entity> {
   delete(entity: Entity): Promise<Entity>;
 }
@@ -19,4 +23,5 @@ export interface IDeleteOne<Entity> {
 export interface IChargeRepository
   extends ISave<ChargeEntity[]>,
     IFindOneByDebtId<ChargeEntity>,
+    IFindAll<ChargeEntity>,
     IUpdate<ChargeEntity> {}

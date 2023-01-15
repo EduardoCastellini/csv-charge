@@ -21,8 +21,6 @@ export class DateVO extends ValueObject<DateVOProps> {
   private static isDateValid(value: Date | string | number): boolean {
     if (!value) return false;
 
-    // if (!(value instanceof Date) || Number.isNaN(value.getTime())) return false;
-
     return true;
   }
 

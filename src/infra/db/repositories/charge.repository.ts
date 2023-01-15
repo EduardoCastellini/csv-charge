@@ -61,4 +61,16 @@ export class SqliteChargeRepository implements IChargeRepository {
       return ChargeOrmMapper.toEntity(modelCharge as unknown as ChargeModel);
     }
   }
+
+  async findAll(): Promise<ChargeEntity[] | void> {
+    const modelCharge = await this.ctx.prisma.charge.findMany().catch((e) => {
+      throw new RepositoryError('Failed to find Charge');
+    });
+
+    if (modelCharge) {
+      return modelCharge.map((charge) => {
+        return ChargeOrmMapper.toEntity(charge as unknown as ChargeModel);
+      });
+    }
+  }
 }
