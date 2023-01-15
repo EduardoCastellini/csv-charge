@@ -10,6 +10,9 @@ API desenvolvida para realizar cobranças por E-mail.
 
 ## Documentação da API
 
+Para facilitar os testes na API, no link abaixo contem a collection do postman com requisiçoes prontas e um arquivo CSV de exemplo:
+[Google DRIVE - KANASTRA](https://drive.google.com/drive/folders/1Jd-rA715hSr-Z0dokXRxknev7xljepre?usp=sharing)
+
 #### Enviar cobranças: 
 ```http
   POST /charge
