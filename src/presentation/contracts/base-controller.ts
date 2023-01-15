@@ -1,65 +1,75 @@
-import * as express from 'express';
+export interface HttpResponse<T = any> {
+  status: number;
+  data: T;
+}
+export interface IRequest<Body = any, Params = any> {
+  body: Body;
+  file: any;
+  params: Params;
+  query: any;
+  headers: any;
+  url: string;
+  auth?: string;
+}
 
-export abstract class BaseController {
-  protected abstract executeImpl(
-    req: express.Request,
-    res: express.Response
-  ): Promise<void | any>;
+export abstract class BaseController<T = any> {
+  protected abstract executeImpl(request: T): Promise<HttpResponse>;
 
-  public async execute(
-    req: express.Request,
-    res: express.Response
-  ): Promise<void> {
+  public async execute(request: T): Promise<HttpResponse> {
     try {
-      await this.executeImpl(req, res);
+      return await this.executeImpl(request);
     } catch (err) {
       console.log(`[BaseController]: Uncaught controller error`);
       console.log(err);
-      this.fail(res, 'An unexpected error occurred');
+      return this.fail();
     }
   }
 
-  public static jsonResponse(
-    res: express.Response,
-    code: number,
-    message: string
-  ) {
-    return res.status(code).json({ message });
+  public static jsonResponse(code: number, message: string): HttpResponse {
+    return {
+      status: code,
+      data: {
+        message
+      }
+    };
   }
 
-  public ok<T>(res: express.Response, dto?: T) {
+  public ok<T>(dto?: T): HttpResponse {
     if (dto) {
-      res.type('application/json');
-      return res.status(200).json(dto);
+      return {
+        status: 200,
+        data: dto
+      };
     } else {
-      return res.sendStatus(200);
+      return {
+        status: 200,
+        data: {}
+      };
     }
   }
 
-  public created(res: express.Response) {
-    return res.sendStatus(201);
+  public created(): HttpResponse {
+    return {
+      status: 201,
+      data: null
+    };
   }
 
-  public clientError(res: express.Response, message?: string) {
-    return BaseController.jsonResponse(
-      res,
-      400,
-      message ? message : 'Bad Request!'
-    );
+  public clientError(message?: string) {
+    return BaseController.jsonResponse(400, message ? message : 'Bad Request!');
   }
 
-  public notFound(res: express.Response, message?: string) {
-    return BaseController.jsonResponse(
-      res,
-      404,
-      message ? message : 'Not found!'
-    );
+  public notFound(message?: string) {
+    return BaseController.jsonResponse(404, message ? message : 'Not found!');
   }
 
-  public fail(res: express.Response, error: Error | string) {
+  public fail(error?: Error | string): HttpResponse {
     console.log(error);
-    return res.status(500).json({
-      message: 'Internal server error!'
-    });
+    return {
+      status: 500,
+      data: {
+        message: 'Internal server error!'
+      }
+    };
   }
 }

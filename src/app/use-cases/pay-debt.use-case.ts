@@ -16,7 +16,7 @@ type PayDebtinput = {
   paidBy: string;
 };
 
-type PayDebtOutput = Either<
+export type PayDebtOutput = Either<
   ChargeNotFoundError | InvalidPropertyError,
   Result<void>
 >;

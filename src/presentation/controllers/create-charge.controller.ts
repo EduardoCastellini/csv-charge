@@ -1,7 +1,6 @@
-import * as express from 'express';
 import csv from 'csv-parser';
 import * as fs from 'fs';
-import { BaseController } from '../contracts';
+import { BaseController, HttpResponse, IRequest } from '../contracts';
 import { CreateChargeInput, ICreateChargeUseCase } from '@/app/use-cases';
 import { InvalidPropertyError } from '@/domain/errors';
 
@@ -10,18 +9,15 @@ export class CreateChargeController extends BaseController {
     super();
   }
 
-  protected async executeImpl(
-    req: express.Request,
-    res: express.Response
-  ): Promise<void | any> {
+  protected async executeImpl(request: IRequest<any>): Promise<HttpResponse> {
     try {
-      if (!req.file) {
-        return this.notFound(res, 'No file uploaded!');
+      if (!request.file) {
+        return this.notFound('No file uploaded!');
       }
 
       const charges: CreateChargeInput[] = [];
 
-      fs.createReadStream(req.file.path)
+      fs.createReadStream(request.file.path)
         .pipe(csv())
         .on('data', (data: CreateChargeInput) => charges.push(data))
         .on('end', async () => {
@@ -32,16 +28,15 @@ export class CreateChargeController extends BaseController {
 
             switch (error.constructor) {
               case InvalidPropertyError:
-                return this.clientError(res, error.getValue().message);
+                return this.clientError(error.getValue().message);
               default:
-                return this.fail(res, error.getValue().message);
+                return this.fail(error.getValue().message);
             }
           }
-
-          return this.created(res);
         });
+      return this.created();
     } catch (err: any) {
-      return this.fail(res, err.toString());
+      return this.fail(err.toString());
     }
   }
 }

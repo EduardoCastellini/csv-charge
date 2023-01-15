@@ -1,10 +1,16 @@
-import * as express from 'express';
 import { IPayDebtUseCase } from '@/app/use-cases';
-import { BaseController } from '../contracts';
+import { BaseController, HttpResponse, IRequest } from '../contracts';
 import { ChargeNotFoundError, InvalidPropertyError } from '@/domain/errors';
 
-type webhookResponse = {
+type ReponseBody = {
   message: string;
+};
+
+type RequestBody = {
+  debtId: string;
+  paidAt: string;
+  paidAmount: number;
+  paidBy: string;
 };
 export class WebhookController extends BaseController {
   constructor(private readonly payDebtUseCase: IPayDebtUseCase) {
@@ -12,30 +18,29 @@ export class WebhookController extends BaseController {
   }
 
   protected async executeImpl(
-    req: express.Request,
-    res: express.Response
-  ): Promise<void | any> {
+    request: IRequest<RequestBody>
+  ): Promise<HttpResponse> {
     try {
-      const resultOrError = await this.payDebtUseCase.execute(req.body);
+      const resultOrError = await this.payDebtUseCase.execute(request.body);
 
       if (resultOrError.isLeft()) {
         const error = resultOrError.value;
 
         switch (error.constructor) {
           case ChargeNotFoundError:
-            return this.clientError(res, error.getValue().message);
+            return this.clientError(error.getValue().message);
           case InvalidPropertyError:
-            return this.clientError(res, error.getValue().message);
+            return this.clientError(error.getValue().message);
           default:
-            return this.fail(res, error.getValue().message);
+            return this.fail(error.getValue().message);
         }
       }
 
-      return this.ok<webhookResponse>(res, {
+      return this.ok<ReponseBody>({
         message: 'Payment notification received successfully'
       });
     } catch (err: any) {
-      return this.fail(res, err);
+      return this.fail(err);
     }
   }
 }
