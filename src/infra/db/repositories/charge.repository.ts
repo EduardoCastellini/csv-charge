@@ -6,8 +6,8 @@ export class SqliteChargeRepository implements IChargeRepository {
   constructor(private readonly ctx: Context) {}
 
   async save(charges: ChargeEntity[]): Promise<ChargeEntity[]> {
-    Promise.resolve(
-      charges.forEach(async (charge) => {
+    await Promise.all(
+      charges.map(async (charge) => {
         await this.ctx.prisma.charge.create({
           data: {
             id: charge.id.value,

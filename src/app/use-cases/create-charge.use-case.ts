@@ -8,6 +8,7 @@ import {
 } from '@/domain/contracts';
 import { ChargeEntity } from '@/domain/entities';
 import { InvalidPropertyError, UnexpectedError } from '@/domain/errors';
+import { IMessageBrokerSendMessage } from '../contracts';
 
 type CreateChargeOutput = Either<
   InvalidPropertyError | UnexpectedError,
@@ -28,7 +29,10 @@ export type ICreateChargeUseCase = IUseCase<
   CreateChargeOutput
 >;
 export class CreateChargeUseCase implements ICreateChargeUseCase {
-  constructor(private readonly chargeRepository: IChargeRepository) {}
+  constructor(
+    private readonly chargeRepository: IChargeRepository,
+    private readonly messageBrokerSendMessage: IMessageBrokerSendMessage
+  ) {}
 
   async execute(input: CreateChargeInput[]): Promise<CreateChargeOutput> {
     try {
@@ -56,8 +60,23 @@ export class CreateChargeUseCase implements ICreateChargeUseCase {
 
       await this.chargeRepository.save(charges);
 
+      await Promise.all(
+        charges.map((charge) => {
+          this.messageBrokerSendMessage.send({
+            data: {
+              name: charge.props.name.value,
+              governmentId: 0,
+              email: charge.props.email.value,
+              debtAmount: 0,
+              debtDueDate: ' '
+            }
+          });
+        })
+      );
+
       return right(Result.ok());
     } catch (error) {
+      console.log('error: ', error);
       return left(UnexpectedError.create(error));
     }
   }
