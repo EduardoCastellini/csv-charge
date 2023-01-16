@@ -35,6 +35,6 @@ export class Email extends ValueObject<EmailProps> {
     if (this.isEmailValid(props.value))
       return right(Result.ok<Email>(new Email(props)));
 
-    return left(new InvalidPropertyError('Email'));
+    return left(new InvalidPropertyError('Email', props.value));
   }
 }

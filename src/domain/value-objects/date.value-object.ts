@@ -30,6 +30,6 @@ export class DateVO extends ValueObject<DateVOProps> {
     if (this.isDateValid(value))
       return right(Result.ok<DateVO>(new DateVO(value)));
 
-    return left(new InvalidPropertyError('Date'));
+    return left(new InvalidPropertyError('Date', value));
   }
 }

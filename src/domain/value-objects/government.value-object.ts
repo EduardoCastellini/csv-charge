@@ -27,6 +27,6 @@ export class Government extends ValueObject<GovernmentProps> {
     if (this.isGovernmentValid(props.value))
       return right(Result.ok<Government>(new Government(props)));
 
-    return left(new InvalidPropertyError('Government'));
+    return left(new InvalidPropertyError('Government', props.value));
   }
 }

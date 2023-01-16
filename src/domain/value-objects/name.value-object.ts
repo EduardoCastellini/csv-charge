@@ -28,6 +28,6 @@ export class Name extends ValueObject<NameProps> {
     if (this.isNameValid(props.value))
       return right(Result.ok<Name>(new Name(props)));
 
-    return left(new InvalidPropertyError('Name'));
+    return left(new InvalidPropertyError('Name', props.value));
   }
 }

@@ -1,6 +1,7 @@
 import { BaseController, HttpResponse, IRequest } from '../contracts';
 import { ICreateChargeUseCase } from '@/app/use-cases';
 import { InvalidPropertyError } from '@/domain/errors';
+import { Result } from '@/domain/contracts';
 
 export class CreateChargeController extends BaseController {
   constructor(private readonly createChargeUseCase: ICreateChargeUseCase) {
@@ -30,7 +31,7 @@ export class CreateChargeController extends BaseController {
 
       return this.created();
     } catch (error: any) {
-      if (error instanceof InvalidPropertyError) {
+      if (error instanceof Result) {
         return this.clientError(error.getValue().message);
       }
       return this.fail(error.toString());
