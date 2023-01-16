@@ -41,6 +41,7 @@ Rota POST disponibilizada como webhook para receber as notificações do banco, 
 
 #### Listar todas as cobranças:
 Rota GET disponibilizada para listar todas as cobranças que estão salvas no banco de dados.
+OBS: Essa rota não espera nem um parâmetro, pois é retornando todos os registros que estão no banco de dados.
 ```http
   GET /charge
 ```
