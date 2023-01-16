@@ -1,6 +1,6 @@
 import { ChargeEntity } from '@/domain/entities';
 import { InvalidPropertyError } from '@/domain/errors';
-import { IMessageBrokerSendMessage } from '../contracts';
+import { IMessageBrokerSendMessage, IReadCsv } from '../contracts';
 import {
   Either,
   IChargeRepository,
@@ -12,27 +12,25 @@ import {
 type CreateChargeOutput = Either<InvalidPropertyError, Result<void>>;
 
 export type CreateChargeInput = {
-  name: string;
-  governmentId: string;
-  email: string;
-  debtAmount: number;
-  debtDueDate: string;
-  debtId: string;
+  filePath: string;
 };
 
 export type ICreateChargeUseCase = IUseCase<
-  CreateChargeInput[],
+  CreateChargeInput,
   CreateChargeOutput
 >;
 export class CreateChargeUseCase implements ICreateChargeUseCase {
   constructor(
     private readonly chargeRepository: IChargeRepository,
-    private readonly messageBrokerSendMessage: IMessageBrokerSendMessage
+    private readonly messageBrokerSendMessage: IMessageBrokerSendMessage,
+    private readonly readCsv: IReadCsv
   ) {}
 
-  async execute(input: CreateChargeInput[]): Promise<CreateChargeOutput> {
+  async execute(input: CreateChargeInput): Promise<CreateChargeOutput> {
+    const fileChanges = await this.readCsv.read(input.filePath);
+
     const charges = await Promise.all(
-      input.map((charge) => {
+      fileChanges.map((charge) => {
         const { name, governmentId, email, debtAmount, debtDueDate, debtId } =
           charge;
 

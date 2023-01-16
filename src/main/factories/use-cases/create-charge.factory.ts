@@ -1,4 +1,5 @@
 import { CreateChargeUseCase, ICreateChargeUseCase } from '@/app/use-cases';
+import { ReadCsv } from '@/infra/csv/read-csv';
 import { SqliteConnection } from '@/infra/db/helpers/connection';
 import { SqliteChargeRepository } from '@/infra/db/repositories/charge.repository';
 import { MessageBroker } from '@/infra/message-broker/bull-adapter';
@@ -9,5 +10,7 @@ export const makeCreateChargeUseCase = (): ICreateChargeUseCase => {
 
   const messageBroker = new MessageBroker();
 
-  return new CreateChargeUseCase(chargeRepository, messageBroker);
+  const readCsv = new ReadCsv();
+
+  return new CreateChargeUseCase(chargeRepository, messageBroker, readCsv);
 };

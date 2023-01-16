@@ -1,7 +1,5 @@
-import csv from 'csv-parser';
-import * as fs from 'fs';
 import { BaseController, HttpResponse, IRequest } from '../contracts';
-import { CreateChargeInput, ICreateChargeUseCase } from '@/app/use-cases';
+import { ICreateChargeUseCase } from '@/app/use-cases';
 import { InvalidPropertyError } from '@/domain/errors';
 
 export class CreateChargeController extends BaseController {
@@ -15,28 +13,27 @@ export class CreateChargeController extends BaseController {
         return this.notFound('No file uploaded!');
       }
 
-      const charges: CreateChargeInput[] = [];
+      const resultOrError = await this.createChargeUseCase.execute({
+        filePath: request.file.path
+      });
 
-      fs.createReadStream(request.file.path)
-        .pipe(csv())
-        .on('data', (data: CreateChargeInput) => charges.push(data))
-        .on('end', async () => {
-          const resultOrError = await this.createChargeUseCase.execute(charges);
+      if (resultOrError.isLeft()) {
+        const error = resultOrError.value;
 
-          if (resultOrError.isLeft()) {
-            const error = resultOrError.value;
+        switch (error.constructor) {
+          case InvalidPropertyError:
+            return this.clientError(error.getValue().message);
+          default:
+            return this.fail(error.getValue().message);
+        }
+      }
 
-            switch (error.constructor) {
-              case InvalidPropertyError:
-                return this.clientError(error.getValue().message);
-              default:
-                return this.fail(error.getValue().message);
-            }
-          }
-        });
       return this.created();
-    } catch (err: any) {
-      return this.fail(err.toString());
+    } catch (error: any) {
+      if (error instanceof InvalidPropertyError) {
+        return this.clientError(error.getValue().message);
+      }
+      return this.fail(error.toString());
     }
   }
 }
