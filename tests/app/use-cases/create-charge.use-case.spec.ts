@@ -1,15 +1,15 @@
-import {
-  CreateChargeInput,
-  CreateChargeUseCase,
-  ICreateChargeUseCase
-} from '@/app/use-cases';
+import { CreateChargeUseCase, ICreateChargeUseCase } from '@/app/use-cases';
 import { IChargeRepository, Result } from '@/domain/contracts';
 import { ChargeEntity } from '@/domain/entities';
-import { IMessageBrokerSendMessage } from '@/app/contracts';
+import {
+  IMessageBrokerSendMessage,
+  IReadCsv,
+  ReadFileOutput
+} from '@/app/contracts';
 import { makeFakeChargeEntity } from '../../domain/mocks';
 import { DateVO, UUID } from '@/domain/value-objects';
 
-const makeCreateChargeInput = (): CreateChargeInput => {
+const makeReadFileOutput = (): ReadFileOutput => {
   return {
     name: 'any_name',
     governmentId: 'any_id',
@@ -60,38 +60,68 @@ const makeMessageBrokerSendMessageStub = (): IMessageBrokerSendMessage => {
   return new MessageBrokerSendMessageStub();
 };
 
+const makeReadCsvStub = (): IReadCsv => {
+  class ReadCsvStub implements IReadCsv {
+    read(): Promise<ReadFileOutput[]> {
+      return new Promise((resolve) => {
+        resolve([makeReadFileOutput()]);
+      });
+    }
+  }
+
+  return new ReadCsvStub();
+};
+
 type SutTypes = {
   sut: ICreateChargeUseCase;
   chargeRepositoryStub: IChargeRepository;
   messageBrokerSendMessageStub: IMessageBrokerSendMessage;
+  readCsvStub: IReadCsv;
 };
 
 const makeSut = (): SutTypes => {
   const chargeRepositoryStub = makeChargeRepositoryStub();
   const messageBrokerSendMessageStub = makeMessageBrokerSendMessageStub();
+  const readCsvStub = makeReadCsvStub();
 
   const sut = new CreateChargeUseCase(
     chargeRepositoryStub,
-    messageBrokerSendMessageStub
+    messageBrokerSendMessageStub,
+    readCsvStub
   );
-  return { sut, chargeRepositoryStub, messageBrokerSendMessageStub };
+  return {
+    sut,
+    chargeRepositoryStub,
+    messageBrokerSendMessageStub,
+    readCsvStub
+  };
 };
 
 describe('CreateChargeUseCase', () => {
   test('Should create charge on success', async () => {
-    const { sut, chargeRepositoryStub, messageBrokerSendMessageStub } =
-      makeSut();
+    const {
+      sut,
+      chargeRepositoryStub,
+      messageBrokerSendMessageStub,
+      readCsvStub
+    } = makeSut();
 
+    const readCsvSpy = jest.spyOn(readCsvStub, 'read');
     const chargeRepositorySpy = jest.spyOn(chargeRepositoryStub, 'save');
     const messageBrokerSendMessageSpy = jest.spyOn(
       messageBrokerSendMessageStub,
       'send'
     );
 
-    const result = await sut.execute([makeCreateChargeInput()]);
+    const result = await sut.execute({
+      filePath: '/uploads/84419265d6f2bdf36a1792080d3eb8bb'
+    });
 
     expect(result.isRight).toBeTruthy();
     expect(result.value).toEqual(Result.ok());
+    expect(readCsvSpy).toHaveBeenCalledWith(
+      '/uploads/84419265d6f2bdf36a1792080d3eb8bb'
+    );
     expect(chargeRepositorySpy).toBeCalledWith(
       expect.arrayContaining([
         {
@@ -106,8 +136,8 @@ describe('CreateChargeUseCase', () => {
     );
     expect(messageBrokerSendMessageSpy).toHaveBeenCalledWith({
       data: {
-        ...makeCreateChargeInput(),
-        debtDueDate: new Date(makeCreateChargeInput().debtDueDate)
+        ...makeReadFileOutput(),
+        debtDueDate: new Date(makeReadFileOutput().debtDueDate)
       }
     });
   });

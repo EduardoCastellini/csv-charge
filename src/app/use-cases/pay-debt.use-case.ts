@@ -9,7 +9,7 @@ import {
 } from '@/domain/contracts';
 import { DateVO, Name } from '@/domain/value-objects';
 
-type PayDebtinput = {
+export type PayDebtinput = {
   debtId: string;
   paidAt: string;
   paidAmount: number;
