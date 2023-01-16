@@ -23,7 +23,6 @@ export class SqliteChargeRepository implements IChargeRepository {
             }
           })
           .catch((e) => {
-            console.log('E: ', e);
             throw new RepositoryError('Failed to save Charge');
           });
       })
